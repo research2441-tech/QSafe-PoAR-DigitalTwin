@@ -1,0 +1,93 @@
+study_area:
+  name: Chennai coastal smart-city case-study region
+  country: India
+  note: >
+    The repository supports public-data ingestion hooks, but the default executable
+    experiment uses deterministic scenario-driven synthetic inputs so that the code
+    can run without private credentials or large external downloads. Any manuscript
+    claim based on downloaded records should be accompanied by exact product version,
+    access date, geographic bounds, temporal range, and extracted variables.
+
+datasets:
+  gpm_imerg:
+    provider: NASA
+    product_family: GPM IMERG
+    temporal_resolution: 30 minutes
+    role: precipitation context and flood-warning driver
+    required_reproducibility_fields:
+      - exact product/release
+      - persistent identifier or direct download URL
+      - access date
+      - temporal interval
+      - spatial extent
+      - coordinate reference system
+      - variables extracted
+      - quality-control rule
+
+  ibtracs:
+    provider: NOAA
+    product_family: IBTrACS
+    role: tropical-cyclone track and intensity context
+    required_reproducibility_fields:
+      - release/version
+      - basin/storm selection criteria
+      - temporal range
+      - distance-to-zone mapping rule
+
+  usgs:
+    provider: USGS
+    product_family: Earthquake Catalog
+    role: seismic disturbance context
+    required_reproducibility_fields:
+      - query/filter
+      - magnitude/depth criteria
+      - temporal range
+      - spatial bounds
+      - distance-to-zone mapping rule
+
+  openstreetmap:
+    provider: OpenStreetMap
+    access_method: OSMnx
+    role: road-network topology and routing context
+    required_reproducibility_fields:
+      - place/bounding polygon
+      - extraction date
+      - network type
+      - simplification settings
+      - routing weight definition
+
+  elevation:
+    provider: SRTM or Copernicus DEM
+    role: terrain and flood-susceptibility context
+    required_reproducibility_fields:
+      - exact product
+      - resolution
+      - vertical datum
+      - resampling method
+
+  population:
+    provider: GHSL or WorldPop
+    role: population exposure context
+    required_reproducibility_fields:
+      - exact release
+      - year
+      - resolution
+      - aggregation-to-zone rule
+
+synthetic_operational_variables:
+  - residual_energy
+  - gateway_availability
+  - communication_stability
+  - communication_delay
+  - packet_loss
+  - microgrid_availability
+  - emergency_resource_availability
+  - traffic_pressure
+  - scenario-derived flood_depth
+  - validator_recovery_contribution
+
+alignment:
+  common_time_step_minutes: 30
+  spatial_unit: simulation zone
+  missing_values: bounded interpolation only when explicitly enabled; otherwise marked unavailable
+  normalization: min-max clipping to declared ranges

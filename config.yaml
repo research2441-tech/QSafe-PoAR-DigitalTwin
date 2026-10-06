@@ -1,0 +1,137 @@
+project:
+  name: QSafe-PoAR-DigitalTwin
+  version: "0.1.0"
+  language: Python
+  evidence_type: simulation-based evaluation informed by public datasets
+
+randomization:
+  seeds: [101, 211, 307, 401, 503, 601, 701, 809, 907, 1009]
+
+simulation:
+  zones: 12
+  sensors_per_zone: 8
+  gateways_per_zone: 1
+  recovery_agents: 12
+  validator_candidates: 16
+  active_validators: 7
+  duration_steps: 48
+  step_minutes: 30
+  warning_threshold: 0.65
+  acceptable_response_seconds: 8.0
+  base_packet_loss: 0.02
+  base_network_delay_ms: 45.0
+
+synthetic_ranges:
+  rainfall_mm_h: [0.0, 95.0]
+  flood_depth_m: [0.0, 1.8]
+  seismic_stress: [0.0, 1.0]
+  cyclone_influence: [0.0, 1.0]
+  road_mobility: [0.0, 1.0]
+  communication_stability: [0.0, 1.0]
+  residual_energy: [0.0, 1.0]
+  population_exposure: [0.0, 1.0]
+  resource_availability: [0.0, 1.0]
+  carbon_intensity_gco2_kwh: [250.0, 850.0]
+
+digital_twin:
+  observation_weight: 0.68
+  uncertainty_decay: 0.15
+  stale_penalty: 0.10
+  hazard_weights:
+    rainfall: 0.28
+    flood: 0.27
+    seismic: 0.10
+    cyclone: 0.15
+    infrastructure: 0.20
+  escalation_coefficients:
+    bias: -1.80
+    hazard: 2.80
+    exposure: 1.15
+    mobility_loss: 0.95
+    communication_loss: 0.70
+    resource_shortage: 0.85
+
+recovery_agent:
+  mode: lightweight_q
+  actions: [evacuate, allocate_relief, switch_microgrid, restore_infrastructure]
+  learning_rate: 0.08
+  discount_factor: 0.94
+  epsilon_start: 0.22
+  epsilon_min: 0.03
+  epsilon_decay: 0.985
+  local_episodes: 60
+  federated_rounds: 6
+  clients_per_round: 8
+  aggregation: weighted_average
+
+poar:
+  weights:
+    trust: 0.20
+    energy: 0.15
+    communication: 0.18
+    synchronization: 0.17
+    recovery: 0.20
+    carbon_cost: 0.10
+  thresholds:
+    security_trust: 0.55
+    energy: 0.25
+    communication: 0.35
+    poar_score: 0.50
+  freshness_steps: 2
+  min_security_eligible: 4
+  fallback: highest_security_eligible
+  normalization:
+    trust: [0.0, 1.0]
+    energy: [0.0, 1.0]
+    communication: [0.0, 1.0]
+    synchronization: [0.0, 1.0]
+    recovery: [0.0, 1.0]
+    carbon_cost: [0.0, 1.0]
+
+consensus:
+  protocol: pbft_style_simulator
+  byzantine_fraction: 0.20
+  proposal_timeout_ms: 900
+  vote_timeout_ms: 1200
+  commit_timeout_ms: 1800
+  base_processing_ms: 25.0
+  transaction_bytes: 2048
+  score_metadata_bytes_per_validator: 96
+
+pqc:
+  mode: modeled
+  kem: ML-KEM-768
+  signature: ML-DSA-65
+  modeled_ms:
+    encapsulate: 0.28
+    decapsulate: 0.31
+    sign: 0.62
+    verify: 0.41
+  modeled_bytes:
+    kem_ciphertext: 1088
+    signature: 3309
+
+carbon_resilience_index:
+  weights:
+    warning_quality: 0.22
+    synchronization_fidelity: 0.18
+    recovery_utility: 0.20
+    reachability: 0.18
+    finality_efficiency: 0.10
+    pqc_efficiency: 0.05
+    carbon_efficiency: 0.07
+
+attacks:
+  spoof_sensor_fraction: 0.12
+  byzantine_validator_fraction: 0.20
+  model_poison_scale: 0.25
+  dos_validator_fraction: 0.18
+  partition_fraction: 0.30
+  packet_loss_extra: 0.18
+  delay_multiplier: 3.0
+  score_manipulation_fraction: 0.15
+
+statistics:
+  alpha: 0.05
+  confidence: 0.95
+  correction: holm
